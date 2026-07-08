@@ -1,0 +1,48 @@
+name: medagenda-dev
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: medagenda-postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: adminpassword
+      POSTGRES_DB: medagenda_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - medagenda-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: medagenda-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@medagenda.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - medagenda-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: medagenda-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: adminpassword
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - medagenda-network
+
+networks:
+  medagenda-network:
+    driver: bridge
+
+volumes:
+  pgdata:
