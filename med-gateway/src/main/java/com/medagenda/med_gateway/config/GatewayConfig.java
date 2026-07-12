@@ -1,5 +1,6 @@
 package com.medagenda.med_gateway.config;
 
+import com.medagenda.med_gateway.filter.JwtAuthFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +27,12 @@ public class GatewayConfig {
     @Value("${route.document.url}")
     private String documentServiceUrl;
 
+    private final JwtAuthFilter jwtAuthFilter;
+
+    public GatewayConfig(JwtAuthFilter jwtAuthFilter) {
+        this.jwtAuthFilter = jwtAuthFilter;
+    }
+
     @Bean
     public RouterFunction<ServerResponse> authRoute() {
         System.out.println("🚦 [MED GATEWAY] Registering routes for Auth Service: " + authServiceUrl);
@@ -33,6 +40,7 @@ public class GatewayConfig {
         return route("auth-service-route")
                 .route(RequestPredicates.path("/api/v1/auth/**")
                         .or(RequestPredicates.path("/api/v1/users/**")), http())
+                .filter(jwtAuthFilter)
                 .before(uri(authServiceUrl))
                 .build();
     }
@@ -45,6 +53,7 @@ public class GatewayConfig {
                 .route(RequestPredicates.path("/api/v1/appointments/**")
                         .or(RequestPredicates.path("/api/v1/catalog/**"))
                         .or(RequestPredicates.path("/api/v1/patients/**")), http())
+                .filter(jwtAuthFilter)
                 .before(uri(appointmentServiceUrl))
                 .build();
     }
@@ -55,6 +64,7 @@ public class GatewayConfig {
 
         return route("clinical-service-route")
                 .route(RequestPredicates.path("/api/v1/clinical/**"), http())
+                .filter(jwtAuthFilter)
                 .before(uri(clinicalServiceUrl))
                 .build();
     }
@@ -65,6 +75,7 @@ public class GatewayConfig {
 
         return route("document-service-route")
                 .route(RequestPredicates.path("/api/v1/documents/**"), http())
+                .filter(jwtAuthFilter)
                 .before(uri(documentServiceUrl))
                 .build();
     }
