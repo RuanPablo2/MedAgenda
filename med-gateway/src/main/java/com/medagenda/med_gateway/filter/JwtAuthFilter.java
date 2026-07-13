@@ -62,9 +62,6 @@ public class JwtAuthFilter implements HandlerFilterFunction<ServerResponse, Serv
     }
 
     private boolean isPublicRoute(String path, String method) {
-        if (path.equals("/api/v1/users") && method.equals("POST")) {
-            return true;
-        }
         return path.equals("/api/v1/auth/login");
     }
 }
