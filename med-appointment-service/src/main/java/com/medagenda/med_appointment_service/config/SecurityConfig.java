@@ -1,6 +1,6 @@
 package com.medagenda.med_appointment_service.config;
 
-import com.medagenda.med_appointment_service.filters.UserContextFilter;
+import com.medagenda.med_commom.filters.UserContextFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;

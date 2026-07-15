@@ -1,4 +1,4 @@
-package com.medagenda.med_appointment_service.filters;
+package com.medagenda.med_commom.filters;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
