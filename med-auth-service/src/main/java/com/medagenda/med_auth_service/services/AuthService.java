@@ -3,6 +3,7 @@ package com.medagenda.med_auth_service.services;
 import com.medagenda.med_auth_service.dtos.LoginDTO;
 import com.medagenda.med_auth_service.dtos.TokenResponseDTO;
 import com.medagenda.med_auth_service.dtos.UserRegisterDTO;
+import com.medagenda.med_auth_service.dtos.UserResponseDTO;
 import com.medagenda.med_auth_service.entities.User;
 import com.medagenda.med_auth_service.repositories.UserRepository;
 import com.medagenda.med_commom.exceptions.BusinessException;
@@ -34,7 +35,7 @@ public class AuthService {
         return new TokenResponseDTO(token);
     }
 
-    public void registerUser(UserRegisterDTO data) {
+    public UserResponseDTO registerUser(UserRegisterDTO data) {
         if (this.userRepository.findByEmail(data.email()).isPresent()) {
             throw new BusinessException("Email already in use", "AUTH_001");
         }
@@ -42,6 +43,8 @@ public class AuthService {
         String encryptedPassword = passwordEncoder.encode(data.password());
         User newUser = new User(data.email(), encryptedPassword, data.role());
 
-        this.userRepository.save(newUser);
+        User savedUser = this.userRepository.save(newUser);
+
+        return new UserResponseDTO(savedUser.getId(), savedUser.getEmail(), savedUser.getRole());
     }
 }

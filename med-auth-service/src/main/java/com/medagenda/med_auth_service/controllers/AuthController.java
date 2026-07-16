@@ -3,6 +3,7 @@ package com.medagenda.med_auth_service.controllers;
 import com.medagenda.med_auth_service.dtos.LoginDTO;
 import com.medagenda.med_auth_service.dtos.TokenResponseDTO;
 import com.medagenda.med_auth_service.dtos.UserRegisterDTO;
+import com.medagenda.med_auth_service.dtos.UserResponseDTO;
 import com.medagenda.med_auth_service.services.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,8 +31,8 @@ public class AuthController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/users")
-    public ResponseEntity<Void> register(@RequestBody UserRegisterDTO data) {
-        authService.registerUser(data);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<UserResponseDTO> register(@RequestBody UserRegisterDTO data) {
+        UserResponseDTO response = authService.registerUser(data);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
