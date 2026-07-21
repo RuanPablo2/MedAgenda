@@ -1,5 +1,6 @@
 package com.medagenda.med_appointment_service.entities;
 
+import com.medagenda.med_appointment_service.entities.enums.AppointmentStatus;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Check;
 
@@ -32,8 +33,9 @@ public class Appointment {
     @Column(nullable = false)
     private LocalDateTime scheduledAt;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status = "SCHEDULED";
+    private AppointmentStatus status = AppointmentStatus.SCHEDULED;
 
     public Appointment() {
     }
@@ -94,11 +96,11 @@ public class Appointment {
         this.scheduledAt = scheduledAt;
     }
 
-    public String getStatus() {
+    public AppointmentStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(AppointmentStatus status) {
         this.status = status;
     }
 

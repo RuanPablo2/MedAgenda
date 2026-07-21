@@ -1,5 +1,7 @@
 package com.medagenda.med_appointment_service.services;
 
+import com.medagenda.med_appointment_service.dtos.AppointmentStatusUpdateDTO;
+import com.medagenda.med_appointment_service.entities.enums.AppointmentStatus;
 import com.medagenda.med_commom.exceptions.BusinessException;
 import com.medagenda.med_appointment_service.dtos.AppointmentRequestDTO;
 import com.medagenda.med_appointment_service.dtos.AppointmentResponseDTO;
@@ -62,5 +64,34 @@ public class AppointmentService {
                 appointment.getScheduledAt(),
                 appointment.getStatus()
         );
+    }
+
+    public void updateAppointmentStatus(Long id, AppointmentStatusUpdateDTO data) {
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Appointment not found", "APP_008"));
+
+        AppointmentStatus currentStatus = appointment.getStatus();
+        AppointmentStatus newStatus = data.status();
+
+        if (currentStatus == newStatus) {
+            return;
+        }
+
+        boolean isValidTransition = switch (currentStatus) {
+            case SCHEDULED -> newStatus == AppointmentStatus.WAITING || newStatus == AppointmentStatus.CANCELED;
+            case WAITING -> newStatus == AppointmentStatus.IN_PROGRESS || newStatus == AppointmentStatus.CANCELED;
+            case IN_PROGRESS -> newStatus == AppointmentStatus.FINISHED || newStatus == AppointmentStatus.CANCELED;
+            case FINISHED, CANCELED -> false;
+        };
+
+        if (!isValidTransition) {
+            throw new BusinessException(
+                    "Invalid status transition from " + currentStatus + " to " + newStatus,
+                    "APP_009"
+            );
+        }
+
+        appointment.setStatus(newStatus);
+        appointmentRepository.save(appointment);
     }
 }
