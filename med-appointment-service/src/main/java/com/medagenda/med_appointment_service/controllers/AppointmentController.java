@@ -4,10 +4,14 @@ import com.medagenda.med_appointment_service.dtos.AppointmentRequestDTO;
 import com.medagenda.med_appointment_service.dtos.AppointmentResponseDTO;
 import com.medagenda.med_appointment_service.dtos.AppointmentStatusUpdateDTO;
 import com.medagenda.med_appointment_service.services.AppointmentService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/appointments")
@@ -35,5 +39,14 @@ public class AppointmentController {
         appointmentService.updateAppointmentStatus(id, data);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/calendar")
+    public ResponseEntity<List<AppointmentResponseDTO>> getCalendar(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end
+    ) {
+        List<AppointmentResponseDTO> calendar = appointmentService.getCalendar(start, end);
+        return ResponseEntity.ok(calendar);
     }
 }

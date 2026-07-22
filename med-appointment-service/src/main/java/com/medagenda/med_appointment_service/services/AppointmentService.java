@@ -13,6 +13,9 @@ import com.medagenda.med_appointment_service.repositories.InsuranceRepository;
 import com.medagenda.med_appointment_service.repositories.PatientRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Service
 public class AppointmentService {
 
@@ -93,5 +96,30 @@ public class AppointmentService {
 
         appointment.setStatus(newStatus);
         appointmentRepository.save(appointment);
+    }
+
+    public List<AppointmentResponseDTO> getCalendar(LocalDateTime startDate, LocalDateTime endDate) {
+
+        if (startDate.isAfter(endDate)) {
+            throw new BusinessException("Start date cannot be after end date", "APP_010");
+        }
+
+        List<Appointment> appointments = appointmentRepository.findByScheduledAtBetween(startDate, endDate);
+
+        return appointments.stream().map(appointment -> {
+            String insuranceName = (appointment.getInsurance() != null)
+                    ? appointment.getInsurance().getName()
+                    : "Particular";
+
+            return new AppointmentResponseDTO(
+                    appointment.getId(),
+                    appointment.getDoctorId(),
+                    appointment.getPatient().getFullName(),
+                    insuranceName,
+                    appointment.getPrice(),
+                    appointment.getScheduledAt(),
+                    appointment.getStatus()
+            );
+        }).toList();
     }
 }
