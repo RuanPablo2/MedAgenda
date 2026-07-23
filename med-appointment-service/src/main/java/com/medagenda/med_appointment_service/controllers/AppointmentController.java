@@ -41,6 +41,7 @@ public class AppointmentController {
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasAnyRole('RECEPTION', 'DOCTOR')")
     @GetMapping("/calendar")
     public ResponseEntity<List<AppointmentResponseDTO>> getCalendar(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
