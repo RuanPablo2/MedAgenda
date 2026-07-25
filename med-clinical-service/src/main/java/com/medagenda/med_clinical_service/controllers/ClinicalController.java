@@ -1,7 +1,9 @@
 package com.medagenda.med_clinical_service.controllers;
 
+import com.medagenda.med_clinical_service.dtos.DailyAgendaResponse;
 import com.medagenda.med_clinical_service.dtos.FinalizeConsultationRequest;
 import com.medagenda.med_clinical_service.entities.ClinicalHistory;
+import com.medagenda.med_clinical_service.integration.AppointmentClient;
 import com.medagenda.med_clinical_service.services.ClinicalHistoryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,8 +17,11 @@ public class ClinicalController {
 
     private final ClinicalHistoryService service;
 
-    public ClinicalController(ClinicalHistoryService service) {
+    private final AppointmentClient appointmentClient;
+
+    public ClinicalController(ClinicalHistoryService service, AppointmentClient appointmentClient) {
         this.service = service;
+        this.appointmentClient = appointmentClient;
     }
 
     @GetMapping("/patients/{patientId}/history")
@@ -35,5 +40,12 @@ public class ClinicalController {
 
         service.finalizeConsultation(appointmentId, doctorId, request);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/agenda/today")
+    @PreAuthorize("hasRole('DOCTOR')")
+    public ResponseEntity<List<DailyAgendaResponse>> getTodayAgenda(@RequestHeader("X-User-Id") Long doctorId) {
+        List<DailyAgendaResponse> agenda = appointmentClient.getDailyAgenda(doctorId);
+        return ResponseEntity.ok(agenda);
     }
 }
