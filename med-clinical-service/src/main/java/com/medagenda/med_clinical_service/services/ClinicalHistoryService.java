@@ -1,6 +1,5 @@
 package com.medagenda.med_clinical_service.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.medagenda.med_clinical_service.dtos.FinalizeConsultationRequest;
 import com.medagenda.med_clinical_service.entities.ClinicalHistory;
 import com.medagenda.med_clinical_service.events.ConsultationFinishedEvent;
@@ -38,30 +37,32 @@ public class ClinicalHistoryService {
 
     @Transactional
     public void finalizeConsultation(Long appointmentId, Long doctorId, FinalizeConsultationRequest request) {
+
+        String jsonbNotes;
         try {
-            String jsonbNotes = objectMapper.writeValueAsString(request.clinicalNotes());
 
-            ClinicalHistory history = new ClinicalHistory(
-                    appointmentId,
-                    request.patientId(),
-                    doctorId,
-                    LocalDateTime.now(),
-                    jsonbNotes
-            );
-            repository.save(history);
-
-            appointmentClient.updateAppointmentStatus(appointmentId, "FINISHED");
-
-            ConsultationFinishedEvent event = new ConsultationFinishedEvent(
-                    appointmentId,
-                    request.patientId(),
-                    doctorId,
-                    history.getCreatedAt()
-            );
-            eventPublisher.publishConsultationFinished(event);
-
+            jsonbNotes = objectMapper.writeValueAsString(request.clinicalNotes());
         } catch (Exception e) {
             throw new RuntimeException("CLINICAL_001: Error processing clinical notes JSON format", e);
         }
+
+        ClinicalHistory history = new ClinicalHistory(
+                appointmentId,
+                request.patientId(),
+                doctorId,
+                LocalDateTime.now(),
+                jsonbNotes
+        );
+        repository.save(history);
+
+        appointmentClient.updateAppointmentStatus(appointmentId, "FINISHED", doctorId);
+
+        ConsultationFinishedEvent event = new ConsultationFinishedEvent(
+                appointmentId,
+                request.patientId(),
+                doctorId,
+                history.getCreatedAt()
+        );
+        eventPublisher.publishConsultationFinished(event);
     }
 }

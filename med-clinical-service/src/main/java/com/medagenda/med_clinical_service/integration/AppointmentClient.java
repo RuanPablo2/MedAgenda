@@ -13,9 +13,11 @@ public class AppointmentClient {
 
     private final RestClient restClient;
 
+    private record AppointmentStatusUpdateDTO(String status) {}
+
     public AppointmentClient(
             RestClient.Builder restClientBuilder,
-            @Value("${appointment.service.url:http://localhost:8081}") String appointmentServiceUrl) {
+            @Value("${appointment.service.url}") String appointmentServiceUrl) {
 
         this.restClient = restClientBuilder
                 .baseUrl(appointmentServiceUrl)
@@ -26,13 +28,20 @@ public class AppointmentClient {
         return restClient.get()
                 .uri("/api/v1/appointments/calendar/today")
                 .header("X-User-Id", String.valueOf(doctorId))
+                .header("X-User-Role", "ROLE_DOCTOR")
                 .retrieve()
                 .body(new ParameterizedTypeReference<List<DailyAgendaResponse>>() {});
     }
 
-    public void updateAppointmentStatus(Long appointmentId, String status) {
+    public void updateAppointmentStatus(Long appointmentId, String status, Long doctorId) {
+
+        AppointmentStatusUpdateDTO body = new AppointmentStatusUpdateDTO(status);
+
         restClient.patch()
-                .uri("/api/v1/appointments/{id}/status?status={status}", appointmentId, status)
+                .uri("/api/v1/appointments/{id}/status", appointmentId)
+                .header("X-User-Id", String.valueOf(doctorId))
+                .header("X-User-Role", "ROLE_DOCTOR")
+                .body(body)
                 .retrieve()
                 .toBodilessEntity();
     }

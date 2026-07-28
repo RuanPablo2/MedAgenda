@@ -122,4 +122,27 @@ public class AppointmentService {
             );
         }).toList();
     }
+
+    public List<AppointmentResponseDTO> getTodayAgendaForDoctor(Long doctorId) {
+        LocalDateTime startOfDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0);
+        LocalDateTime endOfDay = LocalDateTime.now().withHour(23).withMinute(59).withSecond(59);
+
+        List<Appointment> appointments = appointmentRepository.findByDoctorIdAndScheduledAtBetween(doctorId, startOfDay, endOfDay);
+
+        return appointments.stream().map(appointment -> {
+            String insuranceName = (appointment.getInsurance() != null)
+                    ? appointment.getInsurance().getName()
+                    : "Particular";
+
+            return new AppointmentResponseDTO(
+                    appointment.getId(),
+                    appointment.getDoctorId(),
+                    appointment.getPatient().getFullName(),
+                    insuranceName,
+                    appointment.getPrice(),
+                    appointment.getScheduledAt(),
+                    appointment.getStatus()
+            );
+        }).toList();
+    }
 }

@@ -50,4 +50,11 @@ public class AppointmentController {
         List<AppointmentResponseDTO> calendar = appointmentService.getCalendar(start, end);
         return ResponseEntity.ok(calendar);
     }
+
+    @PreAuthorize("hasRole('DOCTOR')")
+    @GetMapping("/calendar/today")
+    public ResponseEntity<List<AppointmentResponseDTO>> getTodayAgenda(@RequestHeader("X-User-Id") Long doctorId) {
+        List<AppointmentResponseDTO> todayAgenda = appointmentService.getTodayAgendaForDoctor(doctorId);
+        return ResponseEntity.ok(todayAgenda);
+    }
 }
