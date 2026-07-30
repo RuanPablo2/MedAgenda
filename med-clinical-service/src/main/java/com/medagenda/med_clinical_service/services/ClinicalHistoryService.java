@@ -38,21 +38,14 @@ public class ClinicalHistoryService {
     @Transactional
     public void finalizeConsultation(Long appointmentId, Long doctorId, FinalizeConsultationRequest request) {
 
-        String jsonbNotes;
-        try {
-
-            jsonbNotes = objectMapper.writeValueAsString(request.clinicalNotes());
-        } catch (Exception e) {
-            throw new RuntimeException("CLINICAL_001: Error processing clinical notes JSON format", e);
-        }
-
         ClinicalHistory history = new ClinicalHistory(
                 appointmentId,
                 request.patientId(),
                 doctorId,
                 LocalDateTime.now(),
-                jsonbNotes
+                request.clinicalNotes()
         );
+
         repository.save(history);
 
         appointmentClient.updateAppointmentStatus(appointmentId, "FINISHED", doctorId);

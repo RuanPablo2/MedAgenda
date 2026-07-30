@@ -61,6 +61,7 @@ public class AppointmentService {
         return new AppointmentResponseDTO(
                 appointment.getId(),
                 appointment.getDoctorId(),
+                appointment.getPatient().getId(),
                 patient.getFullName(),
                 insuranceName,
                 appointment.getPrice(),
@@ -114,6 +115,7 @@ public class AppointmentService {
             return new AppointmentResponseDTO(
                     appointment.getId(),
                     appointment.getDoctorId(),
+                    appointment.getPatient().getId(),
                     appointment.getPatient().getFullName(),
                     insuranceName,
                     appointment.getPrice(),
@@ -137,6 +139,7 @@ public class AppointmentService {
             return new AppointmentResponseDTO(
                     appointment.getId(),
                     appointment.getDoctorId(),
+                    appointment.getPatient().getId(),
                     appointment.getPatient().getFullName(),
                     insuranceName,
                     appointment.getPrice(),

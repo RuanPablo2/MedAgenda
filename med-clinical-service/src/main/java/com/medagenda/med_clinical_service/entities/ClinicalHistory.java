@@ -5,6 +5,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Objects;
 
 @Entity
@@ -29,17 +30,17 @@ public class ClinicalHistory {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb", nullable = false)
-    private String historyNotes;
+    private Map<String, Object> historyNotes;
 
     public ClinicalHistory() {
     }
 
-    public ClinicalHistory(Long appointmentId, Long patientId, Long doctorId, LocalDateTime createdAt, String historyNotes) {
+    public ClinicalHistory(Long appointmentId, Long patientId, Long doctorId, LocalDateTime createdAt, Map<String, Object> historyNotes) {
         this.appointmentId = appointmentId;
         this.patientId = patientId;
         this.doctorId = doctorId;
         this.createdAt = createdAt;
-        this.historyNotes = historyNotes;
+        this.historyNotes = historyNotes;;
     }
 
     public Long getId() {
@@ -82,11 +83,11 @@ public class ClinicalHistory {
         this.createdAt = createdAt;
     }
 
-    public String getHistoryNotes() {
+    public Map<String, Object> getHistoryNotes() {
         return historyNotes;
     }
 
-    public void setHistoryNotes(String historyNotes) {
+    public void setHistoryNotes(Map<String, Object> historyNotes) {
         this.historyNotes = historyNotes;
     }
 
