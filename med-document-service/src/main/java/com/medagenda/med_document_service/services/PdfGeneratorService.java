@@ -33,7 +33,7 @@ public class PdfGeneratorService {
 
             return outputStream.toByteArray();
         } catch (Exception e) {
-            throw new RuntimeException("Falha ao gerar o PDF da consulta", e);
+            throw new RuntimeException("Failed to generate the consultation PDF.", e);
         }
     }
 }
