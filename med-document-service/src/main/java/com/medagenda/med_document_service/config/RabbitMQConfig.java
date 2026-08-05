@@ -11,11 +11,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-    public static final String EXCHANGE_NAME = "med.clinical.events";
+    public static final String EXCHANGE_NAME = "clinical.topic";
     public static final String QUEUE_NAME = "document.consultation.finished.queue";
     public static final String ROUTING_KEY = "consultation.finished.key";
 
-    public static final String DLX_NAME = "med.clinical.events.dlx";
+    public static final String DLX_NAME = "clinical.topic.dlx";
     public static final String DLQ_NAME = QUEUE_NAME + ".dlq";
 
     @Bean

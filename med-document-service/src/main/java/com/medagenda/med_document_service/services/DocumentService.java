@@ -4,8 +4,6 @@ import com.medagenda.med_document_service.entities.Document;
 import com.medagenda.med_document_service.repositories.DocumentRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
 @Service
 public class DocumentService {
 

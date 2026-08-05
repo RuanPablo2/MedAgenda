@@ -2,6 +2,7 @@ package com.medagenda.med_clinical_service.services;
 
 import com.medagenda.med_clinical_service.dtos.FinalizeConsultationRequest;
 import com.medagenda.med_clinical_service.entities.ClinicalHistory;
+import com.medagenda.med_clinical_service.events.ClinicalNoteDTO;
 import com.medagenda.med_clinical_service.events.ConsultationFinishedEvent;
 import com.medagenda.med_clinical_service.integration.AppointmentClient;
 import com.medagenda.med_clinical_service.publisher.ConsultationEventPublisher;
@@ -50,12 +51,21 @@ public class ClinicalHistoryService {
 
         appointmentClient.updateAppointmentStatus(appointmentId, "FINISHED", doctorId);
 
+        List<ClinicalNoteDTO> notes = request.clinicalNotes().entrySet().stream()
+                .map(entry -> new ClinicalNoteDTO(
+                        entry.getKey(),
+                        String.valueOf(entry.getValue())
+                ))
+                .toList();
+
         ConsultationFinishedEvent event = new ConsultationFinishedEvent(
                 appointmentId,
                 request.patientId(),
                 doctorId,
-                history.getCreatedAt()
+                history.getCreatedAt(),
+                notes
         );
+
         eventPublisher.publishConsultationFinished(event);
     }
 }
