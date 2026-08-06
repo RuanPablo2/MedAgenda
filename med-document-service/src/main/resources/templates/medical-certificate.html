@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Atestado Médico</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; padding: 50px; }
+        .header { text-align: center; margin-bottom: 50px; }
+        .document-title { font-size: 24px; font-weight: bold; text-decoration: underline; }
+        .content { font-size: 18px; line-height: 1.8; text-align: justify; }
+        .item-list { margin-top: 15px; padding-left: 20px; text-align: left; }
+        .item-list li { margin-bottom: 5px; }
+        .signature-box { margin-top: 80px; text-align: center; border-top: 1px solid #333; width: 300px; margin-left: auto; margin-right: auto; padding-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="document-title">ATESTADO MÉDICO</div>
+</div>
+
+<div class="content">
+    <p>
+        Atesto para os devidos fins que o paciente (ID: <span th:text="${event.patientId()}"></span>)
+        foi atendido nesta data e necessita de dispensa de suas atividades laborais.
+    </p>
+
+    <p><strong>Observações / Motivos:</strong></p>
+    <ul class="item-list">
+        <li th:each="note : ${certificate}" th:text="${note.content()}"></li>
+    </ul>
+</div>
+
+<div class="signature-box">
+    <p>Assinatura e Carimbo (Médico ID: <span th:text="${event.doctorId()}"></span>)</p>
+</div>
+
+</body>
+</html>

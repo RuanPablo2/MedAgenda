@@ -1,8 +1,11 @@
 package com.medagenda.med_document_service.services;
 
 import com.medagenda.med_document_service.entities.Document;
+import com.medagenda.med_document_service.entities.enums.DocumentType;
 import com.medagenda.med_document_service.repositories.DocumentRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class DocumentService {
@@ -13,8 +16,12 @@ public class DocumentService {
         this.repository = repository;
     }
 
-    public Document findByAppointmentId(Long appointmentId) {
-        return repository.findByAppointmentId(appointmentId)
-                .orElseThrow(() -> new RuntimeException("Document not found for appointment: " + appointmentId));
+    public List<Document> findAllByAppointmentId(Long appointmentId) {
+        return repository.findByAppointmentId(appointmentId);
+    }
+
+    public Document findByAppointmentAndType(Long appointmentId, DocumentType documentType) {
+        return repository.findByAppointmentIdAndDocumentType(appointmentId, documentType)
+                .orElseThrow(() -> new RuntimeException("Document of type " + documentType + " not found for appointment: " + appointmentId));
     }
 }

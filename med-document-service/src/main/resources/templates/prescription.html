@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Receituário</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; padding: 40px; }
+        .header { text-align: center; border-bottom: 2px solid #2c3e50; padding-bottom: 10px; margin-bottom: 40px; }
+        .document-title { font-size: 24px; color: #2c3e50; text-transform: uppercase; letter-spacing: 2px; }
+        .content { font-size: 16px; line-height: 1.6; min-height: 300px; }
+        .item-list { margin-top: 20px; padding-left: 20px; }
+        .item-list li { margin-bottom: 10px; }
+        .signature-box { margin-top: 80px; text-align: center; border-top: 1px solid #333; width: 300px; margin-left: auto; margin-right: auto; padding-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="document-title">Receituário Médico</div>
+    <p>Paciente ID: <span th:text="${event.patientId()}"></span></p>
+</div>
+
+<div class="content">
+    <h3>Uso do Paciente:</h3>
+    <ul class="item-list">
+        <li th:each="note : ${prescription}" th:text="${note.content()}"></li>
+    </ul>
+</div>
+
+<div class="signature-box">
+    <p>Assinatura e Carimbo (Médico ID: <span th:text="${event.doctorId()}"></span>)</p>
+</div>
+
+</body>
+</html>

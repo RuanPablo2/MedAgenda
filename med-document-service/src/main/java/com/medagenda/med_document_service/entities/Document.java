@@ -1,5 +1,6 @@
 package com.medagenda.med_document_service.entities;
 
+import com.medagenda.med_document_service.entities.enums.DocumentType;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -12,8 +13,12 @@ public class Document {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "appointment_id", nullable = false, unique = true)
+    @Column(name = "appointment_id", nullable = false)
     private Long appointmentId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "document_type", nullable = false)
+    private DocumentType documentType;
 
     @Column(name = "file_data", nullable = false)
     private byte[] fileData;
@@ -24,8 +29,9 @@ public class Document {
     public Document() {
     }
 
-    public Document(Long appointmentId, byte[] fileData) {
+    public Document(Long appointmentId, DocumentType documentType, byte[] fileData) {
         this.appointmentId = appointmentId;
+        this.documentType = documentType;
         this.fileData = fileData;
     }
 
@@ -48,6 +54,14 @@ public class Document {
 
     public void setAppointmentId(Long appointmentId) {
         this.appointmentId = appointmentId;
+    }
+
+    public DocumentType getDocumentType() {
+        return documentType;
+    }
+
+    public void setDocumentType(DocumentType documentType) {
+        this.documentType = documentType;
     }
 
     public byte[] getFileData() {

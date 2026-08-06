@@ -1,6 +1,7 @@
 package com.medagenda.med_document_service.controllers;
 
 import com.medagenda.med_document_service.entities.Document;
+import com.medagenda.med_document_service.entities.enums.DocumentType;
 import com.medagenda.med_document_service.services.DocumentService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -20,14 +21,17 @@ public class DocumentController {
         this.documentService = documentService;
     }
 
-    @GetMapping("/appointment/{appointmentId}")
-    public ResponseEntity<byte[]> getDocumentByAppointment(@PathVariable Long appointmentId) {
+    @GetMapping("/appointment/{appointmentId}/{type}")
+    public ResponseEntity<byte[]> getDocumentByType(@PathVariable Long appointmentId, @PathVariable String type) {
 
-        Document document = documentService.findByAppointmentId(appointmentId);
+        DocumentType documentType = DocumentType.valueOf(type.toUpperCase());
+
+        Document document = documentService.findByAppointmentAndType(appointmentId, documentType);
+
+        String fileName = documentType.name().toLowerCase() + "-" + appointmentId + ".pdf";
 
         return ResponseEntity.ok()
-
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"prontuario-" + appointmentId + ".pdf\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(document.getFileData());
     }

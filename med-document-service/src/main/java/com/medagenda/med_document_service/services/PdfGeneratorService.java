@@ -17,13 +17,9 @@ public class PdfGeneratorService {
         this.templateEngine = templateEngine;
     }
 
-    public byte[] generateConsultationPdf(ConsultationFinishedEvent event) {
+    public byte[] generatePdf(String templateName, Context context) {
 
-        Context context = new Context();
-        context.setVariable("event", event);
-        context.setVariable("appointmentId", event.appointmentId());
-
-        String htmlContent = templateEngine.process("consultation-document", context);
+        String htmlContent = templateEngine.process(templateName, context);
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             ITextRenderer renderer = new ITextRenderer();
@@ -33,7 +29,7 @@ public class PdfGeneratorService {
 
             return outputStream.toByteArray();
         } catch (Exception e) {
-            throw new RuntimeException("Failed to generate the consultation PDF.", e);
+            throw new RuntimeException("Failed to generate PDF for template: " + templateName, e);
         }
     }
 }
