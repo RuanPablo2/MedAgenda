@@ -7,9 +7,13 @@ import java.util.List;
 
 public record ConsultationFinishedEvent(
         Long appointmentId,
-        Long doctorId,
         Long patientId,
+        Long doctorId,
         LocalDateTime finishedAt,
-        List<ClinicalNoteDTO> clinicalNotes
+        String symptoms,
+        String diagnosis,
+        String internalNotes,
+        List<PrescriptionDTO> prescriptions,
+        List<CertificateDTO> certificates
 ) {
 }

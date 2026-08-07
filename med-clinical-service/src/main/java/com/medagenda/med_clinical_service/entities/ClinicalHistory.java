@@ -1,11 +1,13 @@
 package com.medagenda.med_clinical_service.entities;
 
+import com.medagenda.med_clinical_service.dtos.CertificateDTO;
+import com.medagenda.med_clinical_service.dtos.PrescriptionDTO;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -28,19 +30,38 @@ public class ClinicalHistory {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(columnDefinition = "TEXT")
+    private String symptoms;
+
+    @Column(columnDefinition = "TEXT")
+    private String diagnosis;
+
+    @Column(columnDefinition = "TEXT")
+    private String internalNotes;
+
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb", nullable = false)
-    private Map<String, Object> historyNotes;
+    @Column(columnDefinition = "jsonb")
+    private List<PrescriptionDTO> prescriptions;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private List<CertificateDTO> certificates;
 
     public ClinicalHistory() {
     }
 
-    public ClinicalHistory(Long appointmentId, Long patientId, Long doctorId, LocalDateTime createdAt, Map<String, Object> historyNotes) {
+    public ClinicalHistory(Long appointmentId, Long patientId, Long doctorId, LocalDateTime createdAt,
+                           String symptoms, String diagnosis, String internalNotes,
+                           List<PrescriptionDTO> prescriptions, List<CertificateDTO> certificates) {
         this.appointmentId = appointmentId;
         this.patientId = patientId;
         this.doctorId = doctorId;
         this.createdAt = createdAt;
-        this.historyNotes = historyNotes;;
+        this.symptoms = symptoms;
+        this.diagnosis = diagnosis;
+        this.internalNotes = internalNotes;
+        this.prescriptions = prescriptions;
+        this.certificates = certificates;
     }
 
     public Long getId() {
@@ -83,12 +104,44 @@ public class ClinicalHistory {
         this.createdAt = createdAt;
     }
 
-    public Map<String, Object> getHistoryNotes() {
-        return historyNotes;
+    public String getSymptoms() {
+        return symptoms;
     }
 
-    public void setHistoryNotes(Map<String, Object> historyNotes) {
-        this.historyNotes = historyNotes;
+    public void setSymptoms(String symptoms) {
+        this.symptoms = symptoms;
+    }
+
+    public String getDiagnosis() {
+        return diagnosis;
+    }
+
+    public void setDiagnosis(String diagnosis) {
+        this.diagnosis = diagnosis;
+    }
+
+    public String getInternalNotes() {
+        return internalNotes;
+    }
+
+    public void setInternalNotes(String internalNotes) {
+        this.internalNotes = internalNotes;
+    }
+
+    public List<PrescriptionDTO> getPrescriptions() {
+        return prescriptions;
+    }
+
+    public void setPrescriptions(List<PrescriptionDTO> prescriptions) {
+        this.prescriptions = prescriptions;
+    }
+
+    public List<CertificateDTO> getCertificates() {
+        return certificates;
+    }
+
+    public void setCertificates(List<CertificateDTO> certificates) {
+        this.certificates = certificates;
     }
 
     @Override

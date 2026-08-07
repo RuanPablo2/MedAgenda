@@ -16,7 +16,7 @@
 
 <div class="header">
     <div class="document-title">Prontuário Clínico</div>
-    <div>Atendimento nº: <span th:text="${appointmentId}"></span></div>
+    <div>Atendimento nº: <span th:text="${event.appointmentId()}"></span></div>
 </div>
 
 <div class="info-section">
@@ -24,10 +24,19 @@
     <p><strong>Médico ID:</strong> <span th:text="${event.doctorId()}"></span></p>
 </div>
 
-<!-- Imprime todas as notas clínicas -->
-<div th:each="note : ${event.clinicalNotes()}" class="note-box">
-    <p class="note-title" th:text="${note.type()}"></p>
-    <p th:text="${note.content()}"></p>
+<div class="note-box" th:if="${event.symptoms() != null}">
+    <p class="note-title">Sintomas / Queixas</p>
+    <p th:text="${event.symptoms()}"></p>
+</div>
+
+<div class="note-box" th:if="${event.diagnosis() != null}">
+    <p class="note-title">Diagnóstico</p>
+    <p th:text="${event.diagnosis()}"></p>
+</div>
+
+<div class="note-box" th:if="${event.internalNotes() != null}">
+    <p class="note-title">Observações Internas</p>
+    <p th:text="${event.internalNotes()}"></p>
 </div>
 
 </body>

@@ -2,7 +2,6 @@ package com.medagenda.med_clinical_service.services;
 
 import com.medagenda.med_clinical_service.dtos.FinalizeConsultationRequest;
 import com.medagenda.med_clinical_service.entities.ClinicalHistory;
-import com.medagenda.med_clinical_service.events.ClinicalNoteDTO;
 import com.medagenda.med_clinical_service.events.ConsultationFinishedEvent;
 import com.medagenda.med_clinical_service.integration.AppointmentClient;
 import com.medagenda.med_clinical_service.publisher.ConsultationEventPublisher;
@@ -44,26 +43,27 @@ public class ClinicalHistoryService {
                 request.patientId(),
                 doctorId,
                 LocalDateTime.now(),
-                request.clinicalNotes()
+                request.symptoms(),
+                request.diagnosis(),
+                request.internalNotes(),
+                request.prescriptions(),
+                request.certificates()
         );
 
         repository.save(history);
 
         appointmentClient.updateAppointmentStatus(appointmentId, "FINISHED", doctorId);
 
-        List<ClinicalNoteDTO> notes = request.clinicalNotes().entrySet().stream()
-                .map(entry -> new ClinicalNoteDTO(
-                        entry.getKey(),
-                        String.valueOf(entry.getValue())
-                ))
-                .toList();
-
         ConsultationFinishedEvent event = new ConsultationFinishedEvent(
                 appointmentId,
                 request.patientId(),
                 doctorId,
                 history.getCreatedAt(),
-                notes
+                request.symptoms(),
+                request.diagnosis(),
+                request.internalNotes(),
+                request.prescriptions(),
+                request.certificates()
         );
 
         eventPublisher.publishConsultationFinished(event);
