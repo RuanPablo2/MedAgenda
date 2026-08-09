@@ -20,6 +20,9 @@ public class Appointment {
     @Column(nullable = false)
     private Long doctorId;
 
+    @Column(nullable = false)
+    private String doctorName;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
@@ -40,8 +43,9 @@ public class Appointment {
     public Appointment() {
     }
 
-    public Appointment(Long doctorId, Patient patient, Insurance insurance, BigDecimal price, LocalDateTime scheduledAt) {
+    public Appointment(Long doctorId, String doctorName, Patient patient, Insurance insurance, BigDecimal price, LocalDateTime scheduledAt) {
         this.doctorId = doctorId;
+        this.doctorName = doctorName;
         this.patient = patient;
         this.insurance = insurance;
         this.price = price;
@@ -62,6 +66,14 @@ public class Appointment {
 
     public void setDoctorId(Long doctorId) {
         this.doctorId = doctorId;
+    }
+
+    public String getDoctorName() {
+        return doctorName;
+    }
+
+    public void setDoctorName(String doctorName) {
+        this.doctorName = doctorName;
     }
 
     public Patient getPatient() {

@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 public record AppointmentResponseDTO(
         Long id,
         Long doctorId,
+        String doctorName,
         Long patientId,
         String patientName,
         String insuranceName,

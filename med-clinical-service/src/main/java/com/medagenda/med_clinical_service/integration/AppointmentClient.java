@@ -1,5 +1,6 @@
 package com.medagenda.med_clinical_service.integration;
 
+import com.medagenda.med_clinical_service.dtos.AppointmentDetailsDTO;
 import com.medagenda.med_clinical_service.dtos.DailyAgendaResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -44,5 +45,14 @@ public class AppointmentClient {
                 .body(body)
                 .retrieve()
                 .toBodilessEntity();
+    }
+
+    public AppointmentDetailsDTO getAppointmentById(Long appointmentId, Long doctorId) {
+        return restClient.get()
+                .uri("/api/v1/appointments/{id}", appointmentId)
+                .header("X-User-Id", String.valueOf(doctorId))
+                .header("X-User-Role", "ROLE_DOCTOR")
+                .retrieve()
+                .body(AppointmentDetailsDTO.class);
     }
 }

@@ -20,8 +20,8 @@
 </div>
 
 <div class="info-section">
-    <p><strong>Paciente ID:</strong> <span th:text="${event.patientId()}"></span></p>
-    <p><strong>Médico ID:</strong> <span th:text="${event.doctorId()}"></span></p>
+    <p><strong>Paciente:</strong> <span th:text="${event.patientName()}"></span></p>
+    <p><strong>Médico(a):</strong> <span th:text="${event.doctorName()}"></span></p>
 </div>
 
 <div class="note-box" th:if="${event.symptoms() != null}">

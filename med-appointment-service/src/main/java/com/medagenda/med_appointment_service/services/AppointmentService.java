@@ -1,7 +1,9 @@
 package com.medagenda.med_appointment_service.services;
 
 import com.medagenda.med_appointment_service.dtos.AppointmentStatusUpdateDTO;
+import com.medagenda.med_appointment_service.dtos.UserResponseDTO;
 import com.medagenda.med_appointment_service.entities.enums.AppointmentStatus;
+import com.medagenda.med_appointment_service.integration.AuthClient;
 import com.medagenda.med_commom.exceptions.BusinessException;
 import com.medagenda.med_appointment_service.dtos.AppointmentRequestDTO;
 import com.medagenda.med_appointment_service.dtos.AppointmentResponseDTO;
@@ -22,11 +24,16 @@ public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final PatientRepository patientRepository;
     private final InsuranceRepository insuranceRepository;
+    private final AuthClient authClient;
 
-    public AppointmentService(AppointmentRepository appointmentRepository, PatientRepository patientRepository, InsuranceRepository insuranceRepository) {
+    public AppointmentService(AppointmentRepository appointmentRepository,
+                              PatientRepository patientRepository,
+                              InsuranceRepository insuranceRepository,
+                              AuthClient authClient) {
         this.appointmentRepository = appointmentRepository;
         this.patientRepository = patientRepository;
         this.insuranceRepository = insuranceRepository;
+        this.authClient = authClient;
     }
 
     public AppointmentResponseDTO scheduleAppointment(AppointmentRequestDTO data) {
@@ -46,8 +53,17 @@ public class AppointmentService {
                     .orElseThrow(() -> new BusinessException("Insurance not found", "APP_004"));
         }
 
+        UserResponseDTO doctor = null;
+        try {
+            doctor = authClient.getUserById(data.doctorId());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BusinessException("Failed to retrieve doctor information. Auth service might be unavailable.", "APP_005");
+        }
+
         Appointment appointment = new Appointment(
                 data.doctorId(),
+                doctor.name(),
                 patient,
                 insurance,
                 data.price(),
@@ -61,6 +77,7 @@ public class AppointmentService {
         return new AppointmentResponseDTO(
                 appointment.getId(),
                 appointment.getDoctorId(),
+                appointment.getDoctorName(),
                 appointment.getPatient().getId(),
                 patient.getFullName(),
                 insuranceName,
@@ -107,6 +124,19 @@ public class AppointmentService {
 
         List<Appointment> appointments = appointmentRepository.findByScheduledAtBetween(startDate, endDate);
 
+        return mapToDTOList(appointments);
+    }
+
+    public List<AppointmentResponseDTO> getTodayAgendaForDoctor(Long doctorId) {
+        LocalDateTime startOfDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0);
+        LocalDateTime endOfDay = LocalDateTime.now().withHour(23).withMinute(59).withSecond(59);
+
+        List<Appointment> appointments = appointmentRepository.findByDoctorIdAndScheduledAtBetween(doctorId, startOfDay, endOfDay);
+
+        return mapToDTOList(appointments);
+    }
+
+    private List<AppointmentResponseDTO> mapToDTOList(List<Appointment> appointments) {
         return appointments.stream().map(appointment -> {
             String insuranceName = (appointment.getInsurance() != null)
                     ? appointment.getInsurance().getName()
@@ -115,6 +145,7 @@ public class AppointmentService {
             return new AppointmentResponseDTO(
                     appointment.getId(),
                     appointment.getDoctorId(),
+                    appointment.getDoctorName(),
                     appointment.getPatient().getId(),
                     appointment.getPatient().getFullName(),
                     insuranceName,
@@ -125,27 +156,24 @@ public class AppointmentService {
         }).toList();
     }
 
-    public List<AppointmentResponseDTO> getTodayAgendaForDoctor(Long doctorId) {
-        LocalDateTime startOfDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0);
-        LocalDateTime endOfDay = LocalDateTime.now().withHour(23).withMinute(59).withSecond(59);
+    public AppointmentResponseDTO getAppointmentById(Long id) {
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Appointment not found", "APP_008"));
 
-        List<Appointment> appointments = appointmentRepository.findByDoctorIdAndScheduledAtBetween(doctorId, startOfDay, endOfDay);
+        String insuranceName = (appointment.getInsurance() != null)
+                ? appointment.getInsurance().getName()
+                : "Particular";
 
-        return appointments.stream().map(appointment -> {
-            String insuranceName = (appointment.getInsurance() != null)
-                    ? appointment.getInsurance().getName()
-                    : "Particular";
-
-            return new AppointmentResponseDTO(
-                    appointment.getId(),
-                    appointment.getDoctorId(),
-                    appointment.getPatient().getId(),
-                    appointment.getPatient().getFullName(),
-                    insuranceName,
-                    appointment.getPrice(),
-                    appointment.getScheduledAt(),
-                    appointment.getStatus()
-            );
-        }).toList();
+        return new AppointmentResponseDTO(
+                appointment.getId(),
+                appointment.getDoctorId(),
+                appointment.getDoctorName(),
+                appointment.getPatient().getId(),
+                appointment.getPatient().getFullName(),
+                insuranceName,
+                appointment.getPrice(),
+                appointment.getScheduledAt(),
+                appointment.getStatus()
+        );
     }
 }

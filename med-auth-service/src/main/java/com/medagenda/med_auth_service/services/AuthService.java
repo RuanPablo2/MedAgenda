@@ -37,14 +37,21 @@ public class AuthService {
 
     public UserResponseDTO registerUser(UserRegisterDTO data) {
         if (this.userRepository.findByEmail(data.email()).isPresent()) {
-            throw new BusinessException("Email already in use", "AUTH_001");
+            throw new BusinessException("Email already in use.", "AUTH_001");
         }
 
         String encryptedPassword = passwordEncoder.encode(data.password());
-        User newUser = new User(data.email(), encryptedPassword, data.role());
+        User newUser = new User(data.name(), data.email(), encryptedPassword, data.role());
 
         User savedUser = this.userRepository.save(newUser);
 
-        return new UserResponseDTO(savedUser.getId(), savedUser.getEmail(), savedUser.getRole());
+        return new UserResponseDTO(savedUser.getId(), savedUser.getName(), savedUser.getEmail(), savedUser.getRole());
+    }
+
+    public UserResponseDTO getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("User not found.", "AUTH_002"));
+
+        return new UserResponseDTO(user.getId(), user.getName(), user.getEmail(), user.getRole());
     }
 }

@@ -24,7 +24,7 @@
     <div class="header">
         <div class="document-title">Receituário Médico</div>
         <div class="recipe-type" th:text="${prescription.type() == 'COMMON' ? 'Via Comum' : 'Controle Especial'}"></div>
-        <p>Paciente ID: <span th:text="${event.patientId()}"></span></p>
+        <p>Paciente: <strong><span th:text="${event.patientName()}"></span></strong></p>
     </div>
 
     <div class="content">
@@ -35,7 +35,8 @@
     </div>
 
     <div class="signature-box">
-        <p>Assinatura e Carimbo (Médico ID: <span th:text="${event.doctorId()}"></span>)</p>
+        <p>Assinatura e Carimbo</p>
+        <p><strong><span th:text="${event.doctorName()}"></span></strong><br/></p>
     </div>
 </div>
 

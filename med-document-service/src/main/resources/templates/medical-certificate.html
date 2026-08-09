@@ -22,8 +22,7 @@
 
     <div class="content">
         <p>
-            Atesto para os devidos fins que o paciente (ID: <span th:text="${event.patientId()}"></span>)
-            foi atendido nesta data e necessita de dispensa de suas atividades laborais por
+            Atesto para os devidos fins que o paciente <strong><span th:text="${event.patientName()}"></span></strong> foi atendido nesta data e necessita de dispensa de suas atividades laborais por
             <strong><span th:text="${cert.days()}"></span> dias</strong>.
         </p>
 
@@ -31,7 +30,8 @@
     </div>
 
     <div class="signature-box">
-        <p>Assinatura e Carimbo (Médico ID: <span th:text="${event.doctorId()}"></span>)</p>
+        <p>Assinatura e Carimbo</p>
+        <p><strong><span th:text="${event.doctorName()}"></span></strong><br/></p>
     </div>
 </div>
 

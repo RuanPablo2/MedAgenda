@@ -1,5 +1,6 @@
 package com.medagenda.med_clinical_service.services;
 
+import com.medagenda.med_clinical_service.dtos.AppointmentDetailsDTO;
 import com.medagenda.med_clinical_service.dtos.FinalizeConsultationRequest;
 import com.medagenda.med_clinical_service.entities.ClinicalHistory;
 import com.medagenda.med_clinical_service.events.ConsultationFinishedEvent;
@@ -38,6 +39,8 @@ public class ClinicalHistoryService {
     @Transactional
     public void finalizeConsultation(Long appointmentId, Long doctorId, FinalizeConsultationRequest request) {
 
+        AppointmentDetailsDTO appointmentDetails = appointmentClient.getAppointmentById(appointmentId, doctorId);
+
         ClinicalHistory history = new ClinicalHistory(
                 appointmentId,
                 request.patientId(),
@@ -57,7 +60,9 @@ public class ClinicalHistoryService {
         ConsultationFinishedEvent event = new ConsultationFinishedEvent(
                 appointmentId,
                 request.patientId(),
+                appointmentDetails.patientName(),
                 doctorId,
+                appointmentDetails.doctorName(),
                 history.getCreatedAt(),
                 request.symptoms(),
                 request.diagnosis(),

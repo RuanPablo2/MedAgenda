@@ -9,7 +9,9 @@ import java.util.List;
 public record ConsultationFinishedEvent(
         Long appointmentId,
         Long patientId,
+        String patientName,
         Long doctorId,
+        String doctorName,
         LocalDateTime finishedAt,
         String symptoms,
         String diagnosis,

@@ -4,6 +4,7 @@ import com.medagenda.med_commom.enums.Role;
 
 public record UserResponseDTO(
         Long id,
+        String name,
         String email,
         Role role
 ) {}
