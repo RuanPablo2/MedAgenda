@@ -7,9 +7,9 @@ import com.medagenda.med_clinical_service.events.ConsultationFinishedEvent;
 import com.medagenda.med_clinical_service.integration.AppointmentClient;
 import com.medagenda.med_clinical_service.publisher.ConsultationEventPublisher;
 import com.medagenda.med_clinical_service.repositories.ClinicalHistoryRepository;
+import com.medagenda.med_commom.exceptions.BusinessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,16 +18,13 @@ import java.util.List;
 public class ClinicalHistoryService {
 
     private final ClinicalHistoryRepository repository;
-    private final ObjectMapper objectMapper;
     private final AppointmentClient appointmentClient;
     private final ConsultationEventPublisher eventPublisher;
 
     public ClinicalHistoryService(ClinicalHistoryRepository repository,
-                                  ObjectMapper objectMapper,
                                   AppointmentClient appointmentClient,
                                   ConsultationEventPublisher eventPublisher) {
         this.repository = repository;
-        this.objectMapper = objectMapper;
         this.appointmentClient = appointmentClient;
         this.eventPublisher = eventPublisher;
     }
@@ -40,6 +37,10 @@ public class ClinicalHistoryService {
     public void finalizeConsultation(Long appointmentId, Long doctorId, FinalizeConsultationRequest request) {
 
         AppointmentDetailsDTO appointmentDetails = appointmentClient.getAppointmentById(appointmentId, doctorId);
+
+        if (!appointmentDetails.patientId().equals(request.patientId())) {
+            throw new BusinessException("The provided patient ID does not match the appointment's patient.", "CLIN_001");
+        }
 
         ClinicalHistory history = new ClinicalHistory(
                 appointmentId,

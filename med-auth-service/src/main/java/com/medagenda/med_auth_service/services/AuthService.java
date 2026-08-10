@@ -7,6 +7,7 @@ import com.medagenda.med_auth_service.dtos.UserResponseDTO;
 import com.medagenda.med_auth_service.entities.User;
 import com.medagenda.med_auth_service.repositories.UserRepository;
 import com.medagenda.med_commom.exceptions.BusinessException;
+import com.medagenda.med_commom.exceptions.ResourceNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -50,7 +51,7 @@ public class AuthService {
 
     public UserResponseDTO getUserById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("User not found.", "AUTH_002"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found.", "AUTH_002"));
 
         return new UserResponseDTO(user.getId(), user.getName(), user.getEmail(), user.getRole());
     }

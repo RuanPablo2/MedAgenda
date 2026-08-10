@@ -1,5 +1,6 @@
 package com.medagenda.med_document_service.services;
 
+import com.medagenda.med_commom.exceptions.ResourceNotFoundException;
 import com.medagenda.med_document_service.entities.Document;
 import com.medagenda.med_document_service.entities.enums.DocumentType;
 import com.medagenda.med_document_service.repositories.DocumentRepository;
@@ -22,6 +23,9 @@ public class DocumentService {
 
     public Document findByAppointmentAndType(Long appointmentId, DocumentType documentType) {
         return repository.findByAppointmentIdAndDocumentType(appointmentId, documentType)
-                .orElseThrow(() -> new RuntimeException("Document of type " + documentType + " not found for appointment: " + appointmentId));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Document of type " + documentType + " not found for appointment: " + appointmentId,
+                        "DOC_001"
+                ));
     }
 }

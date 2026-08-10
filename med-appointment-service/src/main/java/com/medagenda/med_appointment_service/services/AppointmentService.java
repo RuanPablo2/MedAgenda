@@ -13,6 +13,7 @@ import com.medagenda.med_appointment_service.entities.Patient;
 import com.medagenda.med_appointment_service.repositories.AppointmentRepository;
 import com.medagenda.med_appointment_service.repositories.InsuranceRepository;
 import com.medagenda.med_appointment_service.repositories.PatientRepository;
+import com.medagenda.med_commom.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -45,12 +46,12 @@ public class AppointmentService {
         }
 
         Patient patient = patientRepository.findById(data.patientId())
-                .orElseThrow(() -> new BusinessException("Patient not found", "APP_003"));
+                .orElseThrow(() -> new ResourceNotFoundException("Patient not found", "APP_003"));
 
         Insurance insurance = null;
         if (data.insuranceId() != null) {
             insurance = insuranceRepository.findById(data.insuranceId())
-                    .orElseThrow(() -> new BusinessException("Insurance not found", "APP_004"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Insurance not found", "APP_004"));
         }
 
         UserResponseDTO doctor = null;
@@ -89,7 +90,7 @@ public class AppointmentService {
 
     public void updateAppointmentStatus(Long id, AppointmentStatusUpdateDTO data) {
         Appointment appointment = appointmentRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("Appointment not found", "APP_008"));
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found", "APP_008"));
 
         AppointmentStatus currentStatus = appointment.getStatus();
         AppointmentStatus newStatus = data.status();
@@ -158,7 +159,7 @@ public class AppointmentService {
 
     public AppointmentResponseDTO getAppointmentById(Long id) {
         Appointment appointment = appointmentRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("Appointment not found", "APP_008"));
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found", "APP_008"));
 
         String insuranceName = (appointment.getInsurance() != null)
                 ? appointment.getInsurance().getName()

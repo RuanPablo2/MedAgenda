@@ -18,7 +18,7 @@ public class PatientService {
 
     public PatientResponseDTO createPatient(PatientRequestDTO data) {
         if (patientRepository.findByCpf(data.cpf()).isPresent()) {
-            throw new BusinessException("CPF already registered in the system", "APP_005");
+            throw new BusinessException("CPF already registered in the system", "APP_007");
         }
 
         Patient patient = new Patient(
