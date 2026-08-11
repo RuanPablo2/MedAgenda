@@ -4,5 +4,5 @@ public record UserResponseDTO(
         Long id,
         String name,
         String email,
-        String role
+        com.medagenda.med_commom.enums.Role role
 ) {}
