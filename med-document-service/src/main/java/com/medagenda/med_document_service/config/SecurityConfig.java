@@ -1,4 +1,4 @@
-package com.medagenda.med_clinical_service.config;
+package com.medagenda.med_document_service.config;
 
 import com.medagenda.med_commom.filters.UserContextFilter;
 import org.springframework.context.annotation.Bean;

@@ -62,6 +62,9 @@ public class JwtAuthFilter implements HandlerFilterFunction<ServerResponse, Serv
     }
 
     private boolean isPublicRoute(String path, String method) {
-        return path.equals("/api/v1/auth/login");
+        return path.equals("/api/v1/auth/login")
+                || path.contains("/swagger-ui")
+                || path.contains("/v3/api-docs")
+                || path.contains("/swagger-resources");
     }
 }
