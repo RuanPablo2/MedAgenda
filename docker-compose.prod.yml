@@ -1,0 +1,129 @@
+name: medagenda-prod
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: medagenda-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: medagenda_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - medagenda-network
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: medagenda-rabbitmq
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RMQ_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${RMQ_PASSWORD}
+    ports:
+      - "5672:5672"
+    networks:
+      - medagenda-network
+  med-auth-service:
+    build: ./med-auth-service
+    container_name: med-auth-service
+    restart: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://medagenda-postgres:5432/medagenda_db
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - ADMIN_NAME=${ADMIN_NAME}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+    depends_on:
+      - postgres
+    networks:
+      - medagenda-network
+
+  med-appointment-service:
+    build: ./med-appointment-service
+    container_name: med-appointment-service
+    restart: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://medagenda-postgres:5432/medagenda_db
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - AUTH_SERVICE_URL=http://med-auth-service:8081
+    depends_on:
+      - postgres
+      - med-auth-service
+    networks:
+      - medagenda-network
+
+  med-clinical-service:
+    build: ./med-clinical-service
+    container_name: med-clinical-service
+    restart: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://medagenda-postgres:5432/medagenda_db
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - RMQ_HOST=medagenda-rabbitmq
+      - RMQ_PORT=5672
+      - RMQ_USERNAME=${RMQ_USERNAME}
+      - RMQ_PASSWORD=${RMQ_PASSWORD}
+      - APPOINTMENT_SERVICE_URL=http://med-appointment-service:8082
+    depends_on:
+      - postgres
+      - rabbitmq
+      - med-appointment-service
+    networks:
+      - medagenda-network
+
+  med-document-service:
+    build: ./med-document-service
+    container_name: med-document-service
+    restart: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://medagenda-postgres:5432/medagenda_db
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - RMQ_HOST=medagenda-rabbitmq
+      - RMQ_PORT=5672
+      - RMQ_USERNAME=${RMQ_USERNAME}
+      - RMQ_PASSWORD=${RMQ_PASSWORD}
+    depends_on:
+      - postgres
+      - rabbitmq
+    networks:
+      - medagenda-network
+  med-gateway:
+    build: ./med-gateway
+    container_name: med-gateway
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - JWT_SECRET=${JWT_SECRET}
+      - AUTH_SERVICE_URL=http://med-auth-service:8081
+      - APPOINTMENT_SERVICE_URL=http://med-appointment-service:8082
+      - CLINICAL_SERVICE_URL=http://med-clinical-service:8083
+      - DOCUMENT_SERVICE_URL=http://med-document-service:8084
+    depends_on:
+      - med-auth-service
+      - med-appointment-service
+      - med-clinical-service
+      - med-document-service
+    networks:
+      - medagenda-network
+
+networks:
+  medagenda-network:
+    driver: bridge
+
+volumes:
+  pgdata:
