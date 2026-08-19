@@ -28,7 +28,9 @@ services:
     networks:
       - medagenda-network
   med-auth-service:
-    build: ./med-auth-service
+    build:
+      context: .
+      dockerfile: med-auth-service/Dockerfile
     container_name: med-auth-service
     restart: always
     environment:
@@ -46,7 +48,9 @@ services:
       - medagenda-network
 
   med-appointment-service:
-    build: ./med-appointment-service
+    build:
+      context: .
+      dockerfile: med-appointment-service/Dockerfile
     container_name: med-appointment-service
     restart: always
     environment:
@@ -62,7 +66,9 @@ services:
       - medagenda-network
 
   med-clinical-service:
-    build: ./med-clinical-service
+    build:
+      context: .
+      dockerfile: med-clinical-service/Dockerfile
     container_name: med-clinical-service
     restart: always
     environment:
@@ -83,7 +89,9 @@ services:
       - medagenda-network
 
   med-document-service:
-    build: ./med-document-service
+    build:
+      context: .
+      dockerfile: med-document-service/Dockerfile
     container_name: med-document-service
     restart: always
     environment:
@@ -101,7 +109,9 @@ services:
     networks:
       - medagenda-network
   med-gateway:
-    build: ./med-gateway
+    build:
+      context: .
+      dockerfile: med-gateway/Dockerfile
     container_name: med-gateway
     restart: always
     ports:
