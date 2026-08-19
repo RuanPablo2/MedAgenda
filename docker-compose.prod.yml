@@ -111,7 +111,7 @@ services:
     container_name: med-gateway
     restart: always
     ports:
-      - "8080:8080"
+      - "8085:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - JWT_SECRET=${JWT_SECRET}
