@@ -38,6 +38,7 @@ services:
       - ADMIN_NAME=${ADMIN_NAME}
       - ADMIN_EMAIL=${ADMIN_EMAIL}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     depends_on:
       - postgres
     networks:
