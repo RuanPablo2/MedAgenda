@@ -1,0 +1,30 @@
+name: Deploy MedAgenda to Oracle Cloud
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Acessar servidor e realizar deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.ORACLE_HOST }}
+          username: ${{ secrets.ORACLE_USERNAME }}
+          key: ${{ secrets.ORACLE_SSH_KEY }}
+          script: |
+            echo "Iniciando o deploy do MedAgenda..."
+            
+            cd ~/MedAgenda
+
+            git pull origin main
+
+            docker compose -f docker-compose.prod.yml up -d --build --force-recreate
+
+            docker image prune -f
+
+            echo "Deploy do MedAgenda concluído com sucesso 🚀!"
